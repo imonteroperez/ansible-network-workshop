@@ -159,10 +159,19 @@
   tags:
     - etchosts
 
-- name: Put ssh-key in proper spot
+- name: Put ssh-key in proper spot for student
   copy:
     src: ./{{workshop_name}}_key
     dest: "/home/{{student_name}}/.ssh/"
+    owner: "{{ student_name }}"
+    group: "{{ student_name }}"
+  tags:
+    - testing
+
+- name: Put ssh-key in proper for ec2-user
+  copy:
+    src: ./{{workshop_name}}_key
+    dest: "/home/ec2-user/.ssh/"
     owner: "{{ student_name }}"
     group: "{{ student_name }}"
   tags:
@@ -175,7 +184,7 @@
   tags:
     - testing
 
-- name: copy over ssh config file
+- name: copy over ssh config file for student
   template:
     src: sshconfig.j2
     dest: /home/{{student_name}}/.ssh/config
@@ -184,7 +193,23 @@
   tags:
     - testing
 
-- name: change permissions on ssh config file
+- name: copy over ssh config file for ec2-user
+  template:
+    src: sshconfig_ec2.j2
+    dest: /home/ec2-user/.ssh/config
+    owner: "ec2-user"
+    group: "ec2-user"
+  tags:
+    - testing
+
+- name: change permissions on ssh config file for ec2-user
+  file:
+    path: "/home/ec2-user/.ssh/config"
+    mode: 0700
+  tags:
+    - testing
+
+- name: change permissions on ssh config file for student
   file:
     path: "/home/{{student_name}}/.ssh/config"
     mode: 0700
