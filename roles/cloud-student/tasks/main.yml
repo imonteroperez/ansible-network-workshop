@@ -21,9 +21,10 @@
     state: present
     password: "{{ admin_password_hash }}"
 
-- name: Include Red Hat tasks
-  include_tasks: "{{ ansible_os_family }}.yml"
-  when: ansible_os_family == 'RedHat'
+# Do we need this? -Sean, works fine without this
+#- name: Include Red Hat tasks
+#  include_tasks: "{{ ansible_os_family }}.yml"
+#  when: ansible_os_family == 'RedHat'
 
 - name: Configure sshd and sudoers
   lineinfile:
