@@ -3,6 +3,15 @@
   include_vars:
     file: "{{ workshop_template }}"
 
+- name: Debug the variables for this workshop
+  debug:
+    msg:
+      - Number of Students....{{student_number}}
+      - Student Name..........{{student_name}}
+      - Offset................{{offset}}
+      - Inside Octet..........{{inside_octet}}
+      - Outside Octet.........{{outside_octet}}
+
 - include_role:
     name: cloud-networks
   vars:
@@ -105,12 +114,19 @@
   tags:
     - inventory-files
 
-- name: Create human readable control host list
+- name: Create human readable tower host list (part 1/2)
   lineinfile:
-    path: "./{{ workshop_name }}.PUBLIC.LIST"
-    line: "{{ student_name }}: {{ cloud_user }}@{{ instance_item.1.name }}.{{ workshop_name }}.{{ workshop_dns_zone }} Public IP Address={{ cloud_instance_dict[instance_item.1.name].ip }}"
+    path: "./{{ workshop_name }}.PUBLIC.LIST.md"
+    line: "# Login Information for Workshop: {{ workshop_name }}"
     create: yes
-  when: '"control" in instance_item.1.name'
+    insertbefore: BOF
+
+- name: Create human readable tower host list (part 2/2)
+  lineinfile:
+    path: "./{{ workshop_name }}.PUBLIC.LIST.md"
+    line: "{{ student_name }}: `{{ student_name }}@{{ instance_item.1.name }}.{{ workshop_name }}.{{ workshop_dns_zone }}` Public IP Address={{ cloud_instance_dict[instance_item.1.name].ip }}  "
+    create: yes
+  when: '"tower" in instance_item.1.name'
   with_subelements:
     - "{{ vpc_list | default([]) }}"
     - instances
@@ -162,3 +178,5 @@
     - instances
   loop_control:
     loop_var: instance_item
+  tags:
+    - etchosts

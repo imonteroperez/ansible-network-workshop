@@ -2,7 +2,7 @@
 # handlers file for cloud-student
 - name: restart ssh
   service:
-    name: "{{ common_ssh_service_name }}"
+    name: sshd
     state: restarted
 
 - name: reboot
